@@ -1,0 +1,112 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif;
+  color-scheme: dark;
+}
+
+body {
+  background-color: #081d22;
+  color: #e2e8f0;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Subtle, professional petrol card panels */
+.petrol-card {
+  background-color: #0c272e;
+  border: 1px solid #143a43;
+}
+
+.petrol-card-hover {
+  background-color: #0c272e;
+  border: 1px solid #143a43;
+  transition: all 0.15s ease-in-out;
+}
+.petrol-card-hover:hover {
+  border-color: #1f5360;
+  background-color: #0f2e37;
+}
+
+/* Backward-compatible aliases */
+.glass-panel {
+  background-color: #0c272e;
+  border: 1px solid #143a43;
+}
+
+.glass-panel-glow {
+  background-color: #0c272e;
+  border: 1px solid #17434d;
+}
+
+/* Smooth modal backdrop & popup animation */
+.modal-backdrop {
+  background: rgba(4, 14, 17, 0.78);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  animation: fadeIn 0.18s ease-out forwards;
+}
+
+/* Subtle inputs and buttons */
+.petrol-input {
+  background-color: #081d22;
+  border: 1px solid #17434d;
+  color: #f8fafc;
+  border-radius: 0.75rem;
+  padding: 0.625rem 0.875rem;
+  font-size: 0.8125rem;
+  outline: none;
+  transition: border-color 0.15s ease-in-out;
+}
+.petrol-input:focus {
+  border-color: #f59e0b;
+}
+
+.btn-amber {
+  background-color: #f59e0b;
+  color: #061619;
+  font-weight: 700;
+  font-size: 0.8125rem;
+  border-radius: 0.75rem;
+  padding: 0.625rem 1.25rem;
+  transition: all 0.15s ease-in-out;
+}
+.btn-amber:hover {
+  background-color: #fbbf24;
+}
+.btn-amber:active {
+  transform: scale(0.98);
+}
+
+.btn-petrol {
+  background-color: #0e2c33;
+  border: 1px solid #17434d;
+  color: #e2e8f0;
+  font-weight: 600;
+  font-size: 0.8125rem;
+  border-radius: 0.75rem;
+  padding: 0.625rem 1rem;
+  transition: all 0.15s ease-in-out;
+}
+.btn-petrol:hover {
+  background-color: #12363e;
+  border-color: #1f5763;
+  color: #ffffff;
+}
+
+/* Subtle scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #081d22;
+}
+::-webkit-scrollbar-thumb {
+  background: #17424c;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #235d6b;
+}

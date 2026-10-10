@@ -1,0 +1,124 @@
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DATABASE_URL_UNPOOLED")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model College {
+  id         String   @id @default(uuid())
+  name       String
+  domain     String?  @unique
+  totalScore Int      @default(0)
+  createdAt  DateTime @default(now())
+
+  users      User[]
+  leagues    CollegeLeague[]
+}
+
+model User {
+  id          String   @id @default(uuid())
+  displayName String
+  guestToken  String   @unique @default(uuid())
+  collegeId   String?
+  college     College? @relation(fields: [collegeId], references: [id])
+  createdAt   DateTime @default(now())
+
+  hostedRooms  GameRoom[]       @relation("HostRooms")
+  memberships  RoomMembership[]
+  playerScores PlayerScore[]
+}
+
+model QuestionSet {
+  id          String     @id @default(uuid())
+  title       String
+  description String?
+  topic       String     // Quantitative, Logical, Verbal, Data Interpretation
+  createdAt   DateTime   @default(now())
+
+  questions   Question[]
+  gameRooms   GameRoom[]
+}
+
+model Question {
+  id              String      @id @default(uuid())
+  questionSetId   String
+  questionSet     QuestionSet @relation(fields: [questionSetId], references: [id], onDelete: Cascade)
+  text            String
+  options         Json        // Array of { id: string, text: string }
+  correctOptionId String      // Securely kept on server
+  difficulty      String      // Easy, Medium, Hard
+  topic           String      // Quantitative, Logical, Verbal, Data Interpretation
+  subTopic        String?     // e.g. "Probability", "Syllogism", "Reading Comprehension"
+  explanation     String?     // For Replay Intelligence review
+  orderIndex      Int         @default(0)
+  createdAt       DateTime    @default(now())
+}
+
+model GameRoom {
+  id            String           @id @default(uuid())
+  roomCode      String           @unique // 6-char alphanumeric code (e.g. A7X9K2)
+  hostId        String
+  host          User             @relation("HostRooms", fields: [hostId], references: [id])
+  questionSetId String?
+  questionSet   QuestionSet?     @relation(fields: [questionSetId], references: [id])
+  status        String           @default("LOBBY") // LOBBY, STARTING, QUESTION_ACTIVE, ROUND_EVALUATION, GAME_OVER
+  maxPlayers    Int              @default(50)
+  createdAt     DateTime         @default(now())
+
+  members       RoomMembership[]
+  sessions      GameSession[]
+}
+
+model RoomMembership {
+  id          String   @id @default(uuid())
+  roomId      String
+  room        GameRoom @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  socketId    String?
+  displayName String
+  isHost      Boolean  @default(false)
+  joinedAt    DateTime @default(now())
+
+  @@unique([roomId, userId])
+}
+
+model GameSession {
+  id           String        @id @default(uuid())
+  roomId       String
+  room         GameRoom      @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  startedAt    DateTime      @default(now())
+  endedAt      DateTime?
+  totalRounds  Int           @default(0)
+
+  playerScores PlayerScore[]
+}
+
+model PlayerScore {
+  id           String      @id @default(uuid())
+  sessionId    String
+  session      GameSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  userId       String
+  user         User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  totalScore   Int         @default(0)
+  correctCount Int         @default(0)
+  totalAnswered Int        @default(0)
+  speedAvgMs   Float       @default(0)
+  answerLogs   Json?       // Round logs with subTopic, isCorrect, latencyMs for Replay Intelligence
+  createdAt    DateTime    @default(now())
+
+  @@unique([sessionId, userId])
+}
+
+model CollegeLeague {
+  id        String   @id @default(uuid())
+  collegeId String
+  college   College  @relation(fields: [collegeId], references: [id], onDelete: Cascade)
+  points    Int      @default(0)
+  period    String   @default("weekly") // weekly, monthly
+  updatedAt DateTime @updatedAt
+}
